@@ -1,0 +1,378 @@
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+import java.sql.*;
+import javax.swing.*;
+import java.util.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+public class AccountDAO
+{
+	Connection con = null;
+	Statement st = null;
+	public AccountDAO()
+	{
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+    		String url = "jdbc:mysql://localhost/test";
+    		con=DriverManager.getConnection(url, "root", "root");
+    		st=con.createStatement();
+		}catch(Exception e)
+		{
+			System.out.println(e);
+    	}
+	}
+
+	Boolean signup(String fName,String lName,String email,String password)
+	{
+		String email_id = "null";
+		String Bal = "0";
+		String Trans = "null";
+		String Trans_Bal = "0";
+		String Trans_Date = "null";
+		String Account_Date = "null";
+
+		try{
+			
+			String query="Select * from account where Email='"+email+"'";
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next())
+			{
+				String em = rs.getString("Email");
+				if(em.equals(email))
+				{
+					st.close();
+					con.close();
+					return false;
+				}
+			}
+			
+			String query1 = "INSERT INTO account VALUES('" + fName + "','" + lName + "','" + email + "','" + password + "') ";
+     		int rs1 = st.executeUpdate( query1 );
+
+     		if(rs1 > 0)
+			{
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+    			Date date = new Date();  
+    			Account_Date = formatter.format(date); 
+
+				String query2 = "INSERT INTO data VALUES('" + email + "','" + Bal + "','" + Trans + "','" + Trans_Bal + "','" + Trans_Date + "','" + Account_Date + "') ";
+				int rs2 = st.executeUpdate( query2 );
+				if(rs2 > 0)
+				{
+					st.close();
+        			con.close();
+					return true;
+ 				}
+				
+			}
+			st.close();
+        	con.close();
+			
+		}catch(Exception e)
+		{
+			
+			System.out.println(e);
+    		}
+		return false;
+	}
+	
+	
+	Boolean logIn(String email,String password)
+	{
+		try{
+    	
+			String query="Select * from account where Email='"+email+"' and Password='"+password+"' ";
+			ResultSet rs = st.executeQuery(query);
+      
+			if(rs.next() == true)
+			{
+	
+				String em = rs.getString("Email");
+				if(em.equals(email))
+				{	
+					st.close();
+					con.close();
+					return true;
+				}
+			}
+			st.close();
+			con.close();
+		}catch(Exception e){
+      	System.out.println(e);
+    	}
+		
+		return false;
+	}
+	
+	
+	boolean Deposit(String email,String password,String bal)
+	{
+		try
+		{
+			
+			String query="Select * from data where EMAIL = '"+email+"'";
+			ResultSet rs = st.executeQuery(query);
+			rs.next();
+		
+			String trans = "Deposit";
+			String trans_balance = String.valueOf(Double.parseDouble(bal));
+			String account_date = rs.getString("ACC_DATE");
+			String balance = rs.getString("BALANCE");
+			double res = Double.parseDouble(balance) + Double.parseDouble(bal);
+			String total_balance = String.valueOf(res);
+
+
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+			Date date = new Date();  
+			String transaction_date = formatter.format(date);
+
+			String query1 = "UPDATE data SET BALANCE='"+total_balance+"',TRANSACTIONS='"+trans+"',TRANS_BALANCE='"+trans_balance+"',TRANS_DATE='"+transaction_date+"',ACC_DATE='"+account_date+"' " + " WHERE EMAIL = '"+email+"' ";
+			int rs1 = st.executeUpdate( query1 );
+			
+			String query2 = "INSERT INTO history VALUES('" + email + "','" + total_balance + "','" + trans + "','" + trans_balance + "','" + transaction_date + "','" + account_date + "') ";
+			int rs2 = st.executeUpdate( query2 );
+		
+			if(rs1 > 0)
+			{
+				st.close();
+				con.close();
+				return true;
+			}
+			
+			
+		}
+		catch(Exception e){
+      	System.out.println(e);
+    	}
+		
+		return false;
+	}
+	
+	
+	int Transfer(String email,String password,String rec_email,String bal)
+	{
+		String transP = "Transfer(+)";
+		String transN = "Transfer(-)";
+		try
+		{
+			
+			String query="Select * from data where EMAIL = '"+email+"' ";
+			ResultSet rs = st.executeQuery(query);
+				
+			if(rs.next())
+			{
+				String sender_email = rs.getString("Email");
+				String account_date = rs.getString("ACC_DATE");
+				String balance = rs.getString("BALANCE");
+				double res = Double.parseDouble(balance) - Double.parseDouble(bal);
+				String total_balance = String.valueOf(res);
+				String trans_balance = String.valueOf(Double.parseDouble(bal));
+
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+    			Date date = new Date();  
+    			String transaction_date = formatter.format(date);
+				
+				if(sender_email.equals(email))
+				{
+					if(Double.parseDouble(balance) >= Double.parseDouble(bal))
+					{
+						String query1 = "Select * from data where EMAIL = '"+rec_email+"' ";
+						ResultSet rs1 = st.executeQuery(query1);
+						if(rs1.next() == true)
+						{
+							String rec_ID  = rs1.getString("EMAIL");
+							if(rec_ID.equals(rec_email))
+							{
+								String rec_account_date = rs1.getString("ACC_DATE");
+								String rec_balance = rs1.getString("BALANCE");
+								double result = Double.parseDouble(rec_balance) + Double.parseDouble(bal);
+								String rec_total_balance = String.valueOf(result);
+
+								String query2 = "UPDATE data SET BALANCE='"+rec_total_balance+"',TRANSACTIONS='"+transP+"',TRANS_BALANCE='"+trans_balance+"',TRANS_DATE='"+transaction_date+"',ACC_DATE='"+rec_account_date+"' " + " WHERE EMAIL = '"+rec_email+"' ";
+								int rs2 = st.executeUpdate( query2 );
+
+								String query3 = "UPDATE data SET BALANCE='"+total_balance+"',TRANSACTIONS='"+transN+"',TRANS_BALANCE='"+trans_balance+"',TRANS_DATE='"+transaction_date+"',ACC_DATE='"+account_date+"' " + " WHERE EMAIL = '"+email+"' ";
+								int rs3 = st.executeUpdate( query3 );
+
+								String query4 = "INSERT INTO history VALUES('" + email + "','" + total_balance + "','" + transN + "','" + trans_balance + "','" + transaction_date + "','" + account_date + "') ";
+								int rs4 = st.executeUpdate( query4 );
+							
+								String query5 = "INSERT INTO history VALUES('" + rec_email + "','" + rec_total_balance + "','" + transP + "','" + trans_balance + "','" + transaction_date + "','" + rec_account_date + "') ";
+								int rs5 = st.executeUpdate( query5 );
+
+							}
+							else
+							{
+								return 1;
+									
+							}
+						}
+						else
+						{
+							return 2;
+						}
+						
+					}
+					else
+					{
+						return 3;
+					}
+				}
+				else
+				{
+					return 4;
+				}
+			
+			}
+		}
+		catch(Exception e){
+      	System.out.println(e);
+    	}
+		return 0;
+	}
+	
+	
+	int Withdraw(String email,String password,String bal)
+	{
+		
+		try
+		{
+			
+			String query="Select * from data where EMAIL = '"+email+"'";
+			ResultSet rs = st.executeQuery(query);
+			rs.next();
+		
+			String trans = "Withdraw";
+			String trans_balance = String.valueOf(Double.parseDouble(bal));
+			String account_date = rs.getString("ACC_DATE");
+			String balance = rs.getString("BALANCE");
+			String total_balance="";
+			if(Double.parseDouble(balance) >= Double.parseDouble(bal))
+			{
+				double res = Double.parseDouble(balance) - Double.parseDouble(bal);
+				total_balance = String.valueOf(res);
+			}
+			else
+			{
+				return 1;
+			}
+
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+			Date date = new Date();  
+			String transaction_date = formatter.format(date);
+
+			String query1 = "UPDATE data SET BALANCE='"+total_balance+"',TRANSACTIONS='"+trans+"',TRANS_BALANCE='"+trans_balance+"',TRANS_DATE='"+transaction_date+"',ACC_DATE='"+account_date+"' " + " WHERE EMAIL = '"+email+"' ";
+			int rs1 = st.executeUpdate( query1 );
+			
+			String query2 = "INSERT INTO history VALUES('" + email + "','" + total_balance + "','" + trans + "','" + trans_balance + "','" + transaction_date + "','" + account_date + "') ";
+			int rs2 = st.executeUpdate( query2 );
+		
+			if(rs1 > 0)
+			{
+				st.close();
+				con.close();
+				return 0;
+			}
+			
+			
+		}
+		catch(Exception e){
+      	System.out.println(e);
+    	}
+		
+		return 2;
+	}
+	
+	
+	Details viewBalance(String email,String password)
+	{
+		Details dt = null;
+		try
+		{
+			
+			String query="Select * from data where EMAIL = '"+email+"'";
+			ResultSet rs = st.executeQuery(query);
+			rs.next();
+			
+			String balance = rs.getString("BALANCE");
+			String transaction = rs.getString("TRANSACTIONS");
+			String trans_balance = rs.getString("TRANS_BALANCE");
+			String trans_date = rs.getString("TRANS_DATE");
+			String account_date = rs.getString("ACC_DATE");
+			
+			dt = new Details(email,balance,transaction,trans_balance,trans_date,account_date);
+
+			st.close();
+			con.close();
+			
+		}
+		catch(Exception e){
+      	System.out.println(e);
+    	}
+		
+		return dt;
+	}
+	
+	
+	Details viewDetails(String email,String password)
+	{
+		Details dt = null;
+		try
+		{
+			
+			String query="Select * from data where EMAIL = '"+email+"'";
+			ResultSet rs = st.executeQuery(query);
+			rs.next();
+			
+			String balance = rs.getString("BALANCE");
+			String transaction = rs.getString("TRANSACTIONS");
+			String trans_balance = rs.getString("TRANS_BALANCE");
+			String trans_date = rs.getString("TRANS_DATE");
+			String account_date = rs.getString("ACC_DATE");
+			
+			dt = new Details(email,balance,transaction,trans_balance,trans_date,account_date);
+
+			st.close();
+			con.close();
+			
+		}
+		catch(Exception e){
+      	System.out.println(e);
+    	}
+		
+		return dt;
+	}
+	
+	
+	ArrayList viewTransHistory(String email,String password)
+	{
+		ArrayList <Details> AL = new ArrayList<Details>();
+		try
+		{
+			
+			String query="Select * from history where Email = '"+email+"'";
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next())
+			{
+				String balance = rs.getString("Balance");
+				String transaction = rs.getString("Transactions");
+				String trans_balance = rs.getString("Trans_Balance");
+				String trans_date = rs.getString("Trans_Date");
+				String account_date = rs.getString("Acc_Date");
+			
+				Details dt = new Details(email,balance,transaction,trans_balance,trans_date,account_date);
+				AL.add(dt);
+			}
+			
+			st.close();
+			con.close();
+			
+		}
+		catch(Exception e){
+      	System.out.println(e);
+    	}
+		
+		return AL;
+	}
+}

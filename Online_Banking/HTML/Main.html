@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        .container {
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            
+        }
+
+        .heading {
+            font-size: 1.2em;
+        }
+
+        #dImage {
+            height: 120px;
+            width: 130px;
+
+        }
+
+        #tImage {
+            height: 120px;
+            width: 130px;
+
+        }
+
+        #wImage {
+            height: 120px;
+            width: 130px;
+
+        }
+
+        #bImage {
+            height: 120px;
+            width: 130px;
+
+        }
+
+        #dtImage {
+            height: 120px;
+            width: 130px;
+
+        }
+
+        #thImage {
+            height: 120px;
+            width: 130px;
+
+        }
+
+        .box {
+
+            border: 2px solid rgb(0, 0, 0);
+            border-radius: 3px;
+            width: 6.5%;
+            padding: 5%;
+            margin: 0.5%;
+            align-items: center;
+            display: flex;
+        }
+
+
+        .box:hover {
+
+            border: 2px solid black;
+            border-radius: 3px;
+            width: 6.5%;
+            padding: 5%;
+            margin: 0.5;
+            align-items: center;
+            display: flex;
+            cursor: pointer;
+            background-color:rgba(185, 185, 185, 0.712);
+        }
+
+        #logout {
+            size: 35px;
+            padding-left: 17px;
+            padding-right: 17px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            margin-left: 42%;
+            font-size: 15px;
+            border: 2px solid black;
+        }
+
+        #logout:hover {
+            size: 35px;
+            cursor: pointer;
+            background-color: rgb(0, 0, 0);
+            color: rgb(252, 252, 252);
+            padding-left: 17px;
+            padding-right: 17px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            margin-left: 42%;
+            font-size: 15px;
+            border: 2px solid black;
+        }
+
+
+        .box .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+            border-radius: 6px;
+            margin-top: 170px;
+            margin-right: 50px;
+         
+            /* Position the tooltip text - see examples below! */
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .box:hover .tooltiptext {
+            visibility: visible;
+        }
+    </style>
+
+    <script>
+        function Goto(clicked) {
+            if (clicked == "deposit") {
+                window.location.href = "Deposit.html";
+            }
+            else if (clicked == "transfer") {
+                window.location.href = "Transfer.html";
+            }
+            else if (clicked == "withdraw") {
+                window.location.href = "Withdraw.html";
+            }
+            else if (clicked == "view_balance") {
+                window.location.href = "View_balance.html";
+            }
+            else if (clicked == "view_details") {
+                window.location.href = "View_details.html";
+            }
+            else if (clicked == "transaction_histroy") {
+                window.location.href = "Transaction_histroy.html";
+            }
+
+        }
+    </script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <form onclick="Goto(this.id)" id="deposit" class="box" style="margin-left: 19%;">
+            <img src="img/wallet.png" alt="" id="dImage">
+            <span class="tooltiptext">Deposit</span>
+        </form>
+        <form class="box" onclick="Goto(this.id)" id="transfer" class="tooltip">
+            <img src="img/debt.png" alt="" id="tImage">
+            <span class="tooltiptext">Transfer</span>
+        </form>
+        <form class="box" onclick="Goto(this.id)" id="withdraw" class="tooltip">
+            <img src="img/w.png" alt="" id="wImage">
+            <span class="tooltiptext">Withdraw</span>
+        </form>
+        <form class="box" onclick="Goto(this.id)" id="view_balance" style="margin-left: 19%;" class="tooltip">
+            <img src="img/save-money.png" alt="" id="bImage">
+            <span class="tooltiptext">View Balance</span>
+        </form>
+        <form class="box" onclick="Goto(this.id)" id="view_details" class="tooltip">
+            <img src="img/dt2.png" alt="" id="dtImage">
+            <span class="tooltiptext">View Details</span>
+        </form>
+        <form class="box" onclick="Goto(this.id)" id="transaction_histroy" class="tooltip">
+            <img src="img/accounting.png" alt="" id="thImage">
+            <span class="tooltiptext">Transaction</span>
+        </form>
+
+
+    </div>
+    <form action="Logout" method="post" class="container">
+        <button name="logout" id="logout">Log out</button>
+    </form>
+</body>
+
+</html>

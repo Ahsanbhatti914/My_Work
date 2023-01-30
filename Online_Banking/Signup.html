@@ -1,0 +1,215 @@
+<html>
+
+<head>
+    <title>SignUp</title>
+    <style>
+        body
+        {
+            background-color: black;
+        }
+        
+        h1 {
+            margin-left: 34%;
+            margin-bottom: 1%;
+            margin-top: 1%;
+            font-size: 30pt;
+            color: white;
+        }
+
+        img
+        {
+            width: 17%;
+            margin-left: 45%;
+            margin-top: 3%;
+            filter: invert(100%);
+        }
+
+        .input_field {
+
+            margin-left: 37%;
+            margin-top: 1%;
+            font-size: 15px;
+            width: 32%;
+            padding-left: 0px;
+            padding-right: 0px;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            text-align: center;
+            background-color: rgb(1, 183, 255);
+            color: white;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        ::placeholder {
+            color: white;
+            font-weight: bold;
+			opacity:1;
+        }
+
+        .paragraph {
+            font-style: "font-family:calibri;";
+        }
+
+        .para {
+            margin-left: 40%;
+            margin-top: 1%;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #submit {
+            size: 40px;
+            font-weight: bold;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            margin-left: 49.3%;
+            margin-top: 1%;
+            font-size: 15px;
+            background-color: white;
+            border: 2px solid white;
+            color:black;
+            border-radius: 8px;
+        }
+
+        #submit:hover {
+            size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid white;
+			background-color: rgb(1, 215, 255);
+            color: black;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            margin-left: 49.3%;
+            margin-top: 1%;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+
+        table {
+            margin-left: 40%;
+            margin-top: 1%;
+            font-size: 15px;
+        }
+
+        p
+        {
+            color: white;
+        }
+        a
+        {
+            color: white;
+        }
+    </style>
+
+    <script>
+        function validation() {
+
+
+            if (document.getElementById("firstname").value == "") {
+                document.getElementById("firstname_error").innerHTML = "First name is empty!!";
+                document.getElementById("firstname").style.border = "2px solid red";
+                return false;
+            }
+            if (document.getElementById("lastname").value == "") {
+                document.getElementById("lastname_error").innerHTML = "Last name is empty!!"
+                document.getElementById("lastname").style.border = "2px solid red";
+                return false;
+            }
+
+            if (document.getElementById("email").value == "") {
+                document.getElementById("email_error").innerHTML = "Email is empty!!"
+                document.getElementById("email").style.border = "2px solid red";
+                return false;
+            }
+            else {
+                let email = document.getElementById("email").value;
+                if (!((email.indexOf("@") > 0) && (email.lastIndexOf("@") - email.indexOf("@") == 0) && (email.lastIndexOf(".") - email.indexOf("@")) > 1 && (email.length - email.lastIndexOf(".") > 0))) {
+
+                    document.getElementById("email_error").innerHTML = "Invalid Email!!";
+                    document.getElementById("email").style.border = "2px solid red";
+                    return false;
+                }
+                for (i = 0; i < email.length; i++) {
+                    flag = email[i];
+                    if (email[i + 1] == "." && flag == ".") {
+                        document.getElementById("email_error").innerHTML = "Invalid Email!!";
+                        document.getElementById("email").style.border = "2px solid red";
+                        return false;
+                    }
+                }
+
+
+            }
+
+            if (document.getElementById("password").value == "") {
+                document.getElementById("password_error").innerHTML = "Pasword is empty!!"
+                document.getElementById("password").style.border = "2px solid red";
+                return false;
+            }
+            if (document.getElementById("confirm").value == "") {
+                document.getElementById("confirm_error").innerHTML = "Confirm Pasword is empty!!"
+                document.getElementById("confirm").style.border = "2px solid red";
+                return false;
+            }
+            if (document.getElementById("password").value != document.getElementById("confirm").value) {
+                document.getElementById("confirm_error").innerHTML = "Password not matched!!"
+                document.getElementById("confirm").style.border = "2px solid red";
+                return false;
+            }
+
+
+        }
+
+    </script>
+
+</head>
+
+
+
+<body>
+    <img src="img/bb.png" alt="">
+
+    <form onsubmit="return validation()" action="Signup" method="post">
+        <h1 class="paragraph">CREATE YOUR ACCOUNT</h1>
+
+        <input class="input_field" type="text" name="firstname" id="firstname" placeholder="First Name">
+        <span class="error" name="error" id="firstname_error"></span>
+
+        <input class="input_field" type="text" name="lastname" id="lastname" placeholder="Last Name">
+        <span class="error" name="error" id="lastname_error"></span>
+
+        <input class="input_field" type="text" name="email" id="email" placeholder="Email ID">
+        <span class="error" name="error" id="email_error"></span>
+
+        <input class="input_field" type="password" name="password" id="password" placeholder="Password">
+        <span class="error" name="error" id="password_error"></span>
+
+        <input class="input_field" type="password" name="confirm" id="confirm" placeholder="Confirm">
+        <span class="error" name="error" id="confirm_error"></span>
+
+        <input type="Submit" value="SignUp" name="Submit" id="submit">
+
+        <table>
+            <div class="para">
+                <td>
+                    <p class="paragraph">Already have an account?</p>
+                </td>
+                <td><a href="Login.html">LogIn</a></td>
+            </div>
+        </table>
+
+
+    </form>
+
+</body>
+
+
+</html>

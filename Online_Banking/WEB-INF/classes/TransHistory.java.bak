@@ -1,0 +1,208 @@
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+import java.sql.*;
+import javax.swing.*;
+import java.util.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+
+public class TransHistory extends HttpServlet {
+
+  	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  
+	response.setContentType("text/html");
+
+	PrintWriter out = response.getWriter();
+
+    	String email=request.getParameter("email");
+    	String password=request.getParameter("password");
+	String sess_email="";
+	String sess_password="";
+
+    	out.println("<html>");
+	out.println("<style>table, th, td {border: 1px solid black;}</style>");
+    	out.println("<head><title>Transaction History</title></head>");
+    	out.println("<body bgcolor=\"#ffffff\">");
+
+
+    	//try{
+
+    		//Class.forName("com.mysql.jdbc.Driver");
+    		//String url = "jdbc:mysql://localhost/test";
+    		//Connection con=DriverManager.getConnection(url, "root", "root");
+    		//Statement st=con.createStatement();
+
+		//HttpSession session = request.getSession(false);
+     		//if(session != null)
+		//{
+
+			//Enumeration attributeNames = session.getAttributeNames();
+        		//while (attributeNames.hasMoreElements()) {
+           		//sess_email = attributeNames.nextElement().toString();
+           		//sess_password = session.getAttribute(sess_email).toString();
+           	
+        		//}
+
+
+     
+    			//String query="Select * from account where Email='"+email+"' and Password='"+password+"' ";
+      			//ResultSet rs = st.executeQuery(query);
+		
+			//if(rs.next() == true)
+			//{
+ 				//String em = rs.getString("Email");
+				//String ps = rs.getString("Password");
+				//if(em.equals(sess_email) && ps.equals(sess_password))
+				//{
+	   				//if(em.equals(email))
+	   				//{	
+						//String query1="Select * from history where EMAIL = '"+email+"'";
+						//ResultSet rs1 = st.executeQuery(query1);
+						//out.println("<h1>HERE IS YOUR ACCOUNT DETAILS!!</h1>");
+						//out.println("<table><tr><th>ACCOUNT ID</th><th>BALANCE</th><th>TRANSACTION</th><th>TRANSACTION BALANCE</th><th>TRANSACTION DATE</th><th>ACCOUNT DATE</th></tr>");
+						//while(rs1.next())
+						//{
+
+							//String balance = rs1.getString("BALANCE");
+							//String transaction = rs1.getString("TRANSACTIONS");
+							//String transaBalance = rs1.getString("TRANS_BALANCE");
+							//String transaDate = rs1.getString("TRANS_DATE");
+							//String accDate = rs1.getString("ACC_DATE");
+
+							//out.println("<tr><td>"+email+"</td><td>"+balance+"</td><td>"+transaction+"</td><td>"+transaBalance+"</td><td>"+transaDate+"</td><td>"+accDate+"</td></tr>");
+					
+						//}
+						//out.println("</table>");
+					//}
+					//else
+					//{
+						//out.println("<h1>CREDENTIALS NOT FOUND!!</h1>");
+					//}
+				//}
+				//else
+				//{		
+					//out.println("<h1>PLEASE ENTER CORRECT CREDENTIALS!!</h1>");	
+        				
+     				//}
+			//}
+			//else
+			//{		
+				//out.println("<h1>CREDENTIALS NOT FOUND!!</h1>");
+     			//}
+			//out.println("<br><br></body></html>");
+           		//st.close();
+           		//con.close();
+		//}
+		//else
+		//{
+			//out.println("<script>");
+         		//out.println("setTimeout(function(){");
+            		//out.println("window.location.href = 'Login.html';");
+         		//out.println("}, 2000);");
+      			//out.println("</script><h1>PLEASE DO LOG IN FIRST!!</h1>");
+			//out.println("</body></html>");
+		//}
+
+    	//}catch(Exception e)
+	//{
+      		//out.println(e);
+    	//}
+		
+		
+	try
+		{
+			HttpSession session = request.getSession(false);
+     		if(session != null)
+			{
+				
+				
+				if (email == "") 
+				{
+					out.println("<script>");
+					out.println("setTimeout(function(){");
+					out.println("window.location.href = 'Transaction_histroy.jsp';");
+					out.println("}, 2000);");
+					out.println("</script><h1>email is empty</h1>");
+					out.println("</body></html>");
+				}
+				else 
+				{
+					if (!((email.indexOf("@") > 0) && (email.lastIndexOf("@") - email.indexOf("@") == 0) && (email.lastIndexOf(".") - email.indexOf("@")) > 1 && (email.length() - email.lastIndexOf(".") > 0))) 
+					{
+						out.println("<script>");
+						out.println("setTimeout(function(){");
+						out.println("window.location.href = 'Transaction_histroy.jsp';");
+						out.println("}, 2000);");
+						out.println("</script><h1>Invalid email</h1>");
+						out.println("</body></html>");
+					}
+					for (int i = 0; i < email.length(); i++) 
+					{
+						if (email.charAt(i+1) == '.' && email.charAt(i) == '.') 
+						{
+							out.println("<script>");
+							out.println("setTimeout(function(){");
+							out.println("window.location.href = 'Transaction_histroy.jsp';");
+							out.println("}, 2000);");
+							out.println("</script><h1>Invalid email</h1>");
+							out.println("</body></html>");
+						}
+					}
+
+
+				}
+
+				if (password == "") 
+				{
+					out.println("<script>");
+					out.println("setTimeout(function(){");
+					out.println("window.location.href = 'Transaction_histroy.jsp';");
+					out.println("}, 2000);");
+					out.println("</script><h1>Password is empty</h1>");
+					out.println("</body></html>");
+				}
+				
+				
+				
+				sess_email = session.getAttribute("email").toString();
+				sess_password = session.getAttribute("password").toString();
+				if(email.equals(sess_email) && password.equals(sess_password))
+				{
+					AccountDAO obj = new AccountDAO();
+					ArrayList dt = obj.viewTransHistory(email,password);
+					
+					out.println("<table><tr><th>ACCOUNT ID</th><th>CURRENT BALANCE</th><th>TRANSATION</th><th>TRANSACTION BALANCE</th><th>TRANSACTION DATE</th><th>ACCOUNT DATE</th></tr>");
+					out.println("<h1>HERE IS YOUR TRANSACTION HISTORY!!</h1>");
+					for (int i = 0; i < dt.size(); i++) 
+					{
+						out.println("<tr><td>"+((Details)dt.get(0)).getEmail()+"</td><td>"+((Details)dt.get(i)).getBalance()+"</td><td>"+((Details)dt.get(i)).getTransaction()+"</td><td>"+((Details)dt.get(i)).getTransBalance()+"</td><td>"+((Details)dt.get(i)).getTransDate()+"</td><td>"+((Details)dt.get(i)).getAccDate()+"</td>");
+					}
+					
+					out.println("</table></body></html>");
+				}
+				else
+				{
+					out.println("<h1>PLEASE ENTER CORRECT CREDENTIALS!!</h1>");
+					out.println("</body></html>");
+				}
+			}
+			else
+			{
+				out.println("<script>");
+         		out.println("setTimeout(function(){");
+            	out.println("window.location.href = 'Login.html';");
+         		out.println("}, 2000);");
+      			out.println("</script><h1>PLEASE DO LOG IN FIRST!!</h1>");
+				out.println("</body></html>");
+			}
+		}
+		catch(Exception e)
+		{
+			out.println(e);
+		}
+
+  }
+
+}
